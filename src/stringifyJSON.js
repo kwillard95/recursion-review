@@ -34,9 +34,9 @@
 var stringifyJSON = function(obj) {
   var result = '';
   if ( typeof obj === 'function' ) {
-    return undefined;
+    return '{}';
   } else if ( typeof obj === undefined ) {
-    return undefined;
+    return '{}';
   } else if ( obj === null ) {
     return 'null';
   } else if ( typeof obj === 'string' ) {
@@ -45,23 +45,25 @@ var stringifyJSON = function(obj) {
     result += obj;
   } else if ( Array.isArray(obj) ) {
 
-    obj.map(function(el) {
-      stringifyJSON(el);
-    })
-    // result += '[';
-    // if ( obj.length ) {
-    //   for (var i = 0; i < obj.length; i++) {
-    //     result += stringifyJSON(obj[i]) + ',';
-    //   }
-    //   result = result.slice(0, obj.length);
-    // }
-    // result += ']';
+    var arr = obj.map(function(el) {
+      return stringifyJSON(el);
+    });
+
+    return '[' + arr.join(',') + ']';
   } else if (typeof obj === 'object') {
     result += '{';
     for (var key in obj) {
-      result.concat(stringifyJSON(key), ':', stringifyJSON(obj[key]), ',');
+      if ( typeof obj[key] === 'function' ) {
+        return '{}';
+      } else if ( typeof obj[key] === undefined ) {
+        return '{}';
+      }
+      result += stringifyJSON(key) + ':' + stringifyJSON(obj[key]) + ',';
     }
-    result = obj.slice(0, obj.length);
+    if (Object.keys(obj).length !== 0) {
+      result = result.slice(0, result.length - 1);
+    }
+
     result += '}';
   }
   return result;

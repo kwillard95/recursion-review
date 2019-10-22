@@ -15,27 +15,31 @@ var getElementsByClassName = function(className) {
   // your code here
 
 
+
   var result = [];
-  var childrenArr = document.body.children;
+  var body = document.body;
 
   //define inner function that takes in part of element tree
   var innerFunc = function(branch) {
-    for (var i = 0; i < branch.length; i++ ) {
-      if (branch[i].children.length === 0 ) {
-        var list = branch[i].children.classList;
-        if (list[0] === className) {
-          result.push(branch[i].children);
-        }
-      } else {
-        var innerChild = innerFunc(branch[i].children);
-        result.concat(innerChild);
-      }
+    //also check the classList here
 
+    if (branch.classList.length) {
+      for (var j = 0; j < branch.classList.length; j++) {
+        if (branch.classList[j] === className) {
+          result.push(branch);
+        }
+      }
+    }
+    //if branch children is defined then do the for loop length undefined...
+    if (branch.children.length !== 0) {
+      for (var i = 0; i < branch.children.length; i++ ) {
+        result.concat(innerFunc(branch.children[i]));
+      }
     }
     return result;
   };
   //invoke that inner function, and that is recursed
-  innerFunc(childrenArr);
+  return innerFunc(body);
 
 
 };
